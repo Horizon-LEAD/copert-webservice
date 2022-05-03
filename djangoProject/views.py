@@ -37,11 +37,11 @@ def index(request):
         if EFoutput == 'false' and EBoutput == 'false': 
             return Response({"Fail": "Output file option does not exist"}, status=status.HTTP_400_BAD_REQUEST)
         print('before file extention')
-        outputFilepath, outputFilepathEB, outputFile, outputFileEB = decideFileExtention(outputExtension)
+        outputFile, outputFileEB = decideFileExtention(outputExtension)
         print('before delteting')
-        deleteOldOutputFiles(outputFilepath, outputFilepathEB)
+        deleteOldOutputFiles(outputFile, outputFileEB)
         print('before run copert')
-        res = runCopert(filepath, switch, EFoutput, EBoutput, outputFilepath, outputFilepathEB, outputFile, outputFileEB)
+        res = runCopert(filepath, switch, EFoutput, EBoutput, outputFile, outputFileEB)
         print('before zip files')
         zipOutputFiles(outputFile, outputFileEB)
         if res == -1 :
@@ -51,7 +51,7 @@ def index(request):
         else:
             response = HttpResponse(open('output.zip', 'rb'), content_type='application/zip')
         print('before delete 2')
-        deleteOldOutputFiles(outputFilepath, outputFilepathEB)
+        deleteOldOutputFiles(outputFile, outputFileEB)
     else:
         response = Response({"Fail": "Bad Request"}, status=status.HTTP_400_BAD_REQUEST)
     
@@ -62,16 +62,12 @@ def decideFileExtention(outputExtension):
     if outputExtension is None:  # valia
         outputExtension = 'xlsx'
     if outputExtension == 'xlsx':
-        outputFilepath = 'C:\\Users\\Administrator\\Desktop\\djangoProject\\output.xlsx'
-        outputFilepathEB = 'C:\\Users\\Administrator\\Desktop\\djangoProject\\outputEB.xlsx'
         outputFile = 'output.xlsx'
         outputFileEB = 'outputEB.xlsx'
     else:
-        outputFilepath = 'C:\\Users\\Administrator\\Desktop\\djangoProject\\output.json'
-        outputFilepathEB = 'C:\\Users\\Administrator\\Desktop\\djangoProject\\outputEB.json'
         outputFile = 'output.json'
         outputFileEB = 'outputEB.json'
-    return outputFilepath, outputFilepathEB, outputFile, outputFileEB
+    return outputFile, outputFileEB
 
 
 def zipOutputFiles(outputFile, outputFileEB):
@@ -83,11 +79,11 @@ def zipOutputFiles(outputFile, outputFileEB):
     outputZip.close()
 
 
-def deleteOldOutputFiles(outputFilepath, outputFilepathEB):
-    if exists(outputFilepath):
-        os.remove(outputFilepath)
-    if exists(outputFilepathEB):
-        os.remove(outputFilepathEB)
+def deleteOldOutputFiles(outputFile, outputFileEB):
+    if exists(outputFile):
+        os.remove(outputFile)
+    if exists(outputFileEB):
+        os.remove(outputFileEB)
 
 
 def getInputFile(request):
@@ -97,16 +93,16 @@ def getInputFile(request):
     return path 
 
 
-def runCopert(filepath, switch, EFoutput, EBoutput, outputFilepath, outputFilepathEB, outputFile, outputFileEB):
+def runCopert(filepath, switch, EFoutput, EBoutput, outputFile, outputFileEB):
     filepath, command = prepareCommand(filepath, switch, EFoutput, EBoutput, outputFile, outputFileEB)
     t0 = time.time()
     t1 = time.time()
     cmd = subprocess.Popen(["start", "cmd", "/c", command], stdout=subprocess.PIPE, shell=True)
-    while EBoutput == 'true' and not exists(outputFilepathEB) and (t1 - t0) < 200:
+    while EBoutput == 'true' and not exists(outputFileEB) and (t1 - t0) < 200:
         time.sleep(2)
         t1 = time.time()
         print('searching for EB')
-    while EFoutput == 'true' and not exists(outputFilepath)and (t1 - t0) < 200:
+    while EFoutput == 'true' and not exists(outputFile)and (t1 - t0) < 200:
         time.sleep(2)
         t1 = time.time()
         print('searching for EF')
