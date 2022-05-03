@@ -1,0 +1,1 @@
+copert -i Portugal.xlsx -oEF output.xlsx -oEB outputEB.xlsx (noevap) (ES keep)
