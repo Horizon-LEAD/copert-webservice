@@ -15,7 +15,7 @@ The web service has been tested with COPERT version 5.4.52.
 
 ## Usage
 
-The COPERT webservice start by running
+To start the COPERT webservice run
 
 ```
 <path-of-your-python-installation>\python.exe manage.py runserver 0.0.0.0:8000
